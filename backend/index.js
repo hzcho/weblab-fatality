@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { testConnectDB } from "./config/db.js";
+import { testConnectDB, sequelize } from "./config/db.js";
 
 dotenv.config();
 
@@ -19,6 +19,7 @@ app.get('/', (req, res) => {
 const startServer = async () => {
     try {
         await testConnectDB()
+        await sequelize.sync({ alter: true });
 
         app.listen(PORT, () => {
             console.log(`Server is running on port ${PORT}`);
