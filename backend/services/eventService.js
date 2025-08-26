@@ -15,11 +15,11 @@ class EventService{
     }
 
     async getAllEvents(){
-        return await Event.findAll({ include: User });
+        return await Event.findAll();
     }
 
-    async getEventById(){
-        return await Event.findByPk()
+    async getEventById(id){
+        return await Event.findByPk(id)
     }
 
     async updateEvent(id, eventData) {
@@ -35,7 +35,7 @@ class EventService{
             }
         }
 
-        return await Event.update(id, eventData);
+        return await event.update(eventData);
   }
 
   async deleteEvent(id) {

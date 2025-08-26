@@ -1,10 +1,9 @@
-import eventService from "../services/eventService.js";
 import asyncHandler from "../middleware/asyncHandler.js";
-import { BadRequestError } from "../utils/errors.js";
+import UserService from "../services/userService.js";
 
 class UserController {
     getAllUsers=asyncHandler(async (req, res) => {
-      const users = await userService.getAllUsers();
+      const users = await UserService.getAllUsers();
       res.status(200).json(users);
     })
 
@@ -16,7 +15,7 @@ class UserController {
         return res.status(400).json({ message: "Имя и email обязательны для заполнения" });
       }
 
-      const user = await userService.createUser(name, email);
+      const user = await UserService.createUser(name, email);
       res.status(201).json(user);
     })
 }
