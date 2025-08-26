@@ -6,6 +6,17 @@ info:
 servers:
   - url: 'http://localhost:5000/api'
 
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: API key для доступа к endpoints
+
+security:
+  - ApiKeyAuth: []
+
 paths:
   /events:
     get:
