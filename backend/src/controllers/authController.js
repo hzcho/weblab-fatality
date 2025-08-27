@@ -17,9 +17,16 @@ class AuthController{
     login=asyncHandler(async (req, res) =>{
         const {email, password} =req.body;
 
-        const accessToken= await AuthService.login(email, password);
-        res.status(200).json(accessToken)
+        const tokens= await AuthService.login(email, password);
+        res.status(200).json(tokens)
     });
+
+    refreshToken=asyncHandler(async (req, res) =>{
+        const {refreshToken} = req.body;
+
+        const tokens = await AuthService.refreshToken(refreshToken);
+        res.status(200).json(tokens);
+    })
 }
 
 export default new AuthController();
