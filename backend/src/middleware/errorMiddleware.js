@@ -18,12 +18,6 @@ function errorMiddleware(err, req, res, next) {
         errors = Object.values(err.errors).map(val => val.message);
     }
 
-    if (err.name === 'MongoError' && err.code === 11000) {
-        statusCode = 409;
-        message = 'Дублирующиеся данные';
-        errors.push('Запись с такими данными уже существует.');
-    }
-
     if (err.name === 'UnauthorizedError') {
         statusCode = 401;
         message = 'Не авторизован';
