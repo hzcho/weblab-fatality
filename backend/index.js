@@ -9,6 +9,7 @@ import { load } from 'js-yaml';
 import { readFileSync } from 'fs';
 import swaggerUi from 'swagger-ui-express';
 import morganLogger from './src/middleware/morganLogger.js';
+import passport from './config/passport.js';
 
 dotenv.config();
 
@@ -20,9 +21,10 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(express.json());
 app.use(cors()); 
 app.use(morganLogger);
-app.use(apiKeyMiddleware);
+//app.use(apiKeyMiddleware);
 app.use('/api', routes);
 app.use(errorMiddleware);
+app.use(passport.initialize());
 
 const PORT = process.env.PORT || 5000;
 

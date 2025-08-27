@@ -1,4 +1,4 @@
-import asyncHandler from "../middleware/asyncHandler";
+import asyncHandler from "../middleware/asyncHandler.js";
 import {BadRequestError } from "../utils/errors.js";
 import AuthService from "../services/authService.js"
 
@@ -10,16 +10,16 @@ class AuthController{
              throw new BadRequestError("Все обязательные поля должны быть заполнены");
         }
 
-        AuthService.register(name, email, password)
+        await AuthService.register(name, email, password)
         res.status(200).json({message: "успешная регистрация"})
-    })
+    });
 
     login=asyncHandler(async (req, res) =>{
         const {email, password} =req.body;
 
-        const accessToken=AuthService.login(email, password);
+        const accessToken= await AuthService.login(email, password);
         res.status(200).json(accessToken)
-    })
+    });
 }
 
 export default new AuthController();
