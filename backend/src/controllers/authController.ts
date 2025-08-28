@@ -1,6 +1,6 @@
-import asyncHandler from '../middleware/asyncHandler.js';
-import { BadRequestError } from '../utils/errors.js';
-import AuthService from '../services/authService.js';
+import asyncHandler from '@middleware/asyncHandler.js';
+import { BadRequestError } from '@utils/errors.js';
+import AuthService from '@services/authService.js';
 import { Request, Response } from 'express';
 
 class AuthController {

@@ -5,11 +5,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "prepare": "husky install",
     "dev": "nodemon --ext ts --exec tsx ./backend/src/index.ts",
     "tsc": "npx tsc",
     "lint": "npx eslint . --ext .ts",
     "format": "npx prettier --write .",
     "check": "npx tsc --noEmit && npx eslint . --ext .ts"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
   },
   "keywords": [],
   "author": "",
@@ -45,7 +52,9 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "globals": "^16.3.0",
+    "husky": "^9.1.7",
     "jiti": "^2.5.1",
+    "lint-staged": "^16.1.5",
     "nodemon": "^3.1.10",
     "prettier": "^3.6.2",
     "tsx": "^4.20.5",

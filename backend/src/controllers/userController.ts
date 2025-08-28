@@ -1,5 +1,5 @@
-import asyncHandler from '../middleware/asyncHandler.js';
-import UserService from '../services/userService.js';
+import asyncHandler from '@middleware/asyncHandler.js';
+import UserService from '@services/userService.js';
 import { Request, Response } from 'express';
 
 class UserController {

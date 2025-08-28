@@ -1,4 +1,4 @@
-import { ForbiddenError } from '../utils/errors.js';
+import { ForbiddenError } from '@utils/errors.js';
 import { Request, Response, NextFunction } from 'express';
 
 const apiKeyMiddleware = (req: Request, res: Response, next: NextFunction) => {

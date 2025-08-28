@@ -1,14 +1,14 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { testConnectDB, sequelize } from '../config/db.js';
-import routes from './routes/index.js';
-import errorMiddleware from './middleware/errorMiddleware.js';
+import { testConnectDB, sequelize } from '@config/db.js';
+import routes from '@routes/index.js';
+import errorMiddleware from '@middleware/errorMiddleware.js';
 import { load } from 'js-yaml';
 import { readFileSync } from 'fs';
 import swaggerUi, { JsonObject } from 'swagger-ui-express';
-import morganLogger from './middleware/morganLogger.js';
-import passport from '../config/passport.js';
+import morganLogger from '@middleware/morganLogger.js';
+import passport from '@config/passport.js';
 
 dotenv.config();
 

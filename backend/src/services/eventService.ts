@@ -1,6 +1,6 @@
-import User from '../models/user';
-import Event from '../models/event';
-import { NotFoundError } from '../utils/errors';
+import User from '@models/user';
+import Event from '@models/event';
+import { NotFoundError } from '@utils/errors';
 import { InferCreationAttributes } from 'sequelize';
 
 class EventService {

@@ -18,7 +18,8 @@
       "@routes/*": ["src/routes/*"],
       "@utils/*": ["src/utils/*"],
       "@config/*": ["config/*"],
-      "@root/*": ["/*"]
+      "@root/*": ["/*"],
+      "@services/*": ["src/services/*"],
     }
   },
   "include": ["backend/src"],

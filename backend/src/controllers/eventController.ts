@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import eventService from '../services/eventService';
-import asyncHandler from '../middleware/asyncHandler';
-import { BadRequestError } from '../utils/errors';
+import eventService from '@services/eventService';
+import asyncHandler from '@middleware/asyncHandler';
+import { BadRequestError } from '@utils/errors';
 import { validate as isUUID } from 'uuid';
 
 class EventController {

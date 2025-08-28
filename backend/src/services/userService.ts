@@ -1,4 +1,4 @@
-import User from '../models/user.js';
+import User from '@models/user.js';
 import { BadRequestError } from '@utils/errors.js';
 
 class UserService {

@@ -1,8 +1,8 @@
-import User from '../models/user';
-import { BadRequestError, UnauthorizedError } from '../utils/errors';
+import User from '@models/user';
+import { BadRequestError, UnauthorizedError } from '@utils/errors';
 import bcrypt from 'bcryptjs';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import RefreshToken from '../models/refreshToken';
+import RefreshToken from '@models/refreshToken';
 
 const JWT_SECRET: string = process.env.JWT_SECRET as string;
 const REFRESH_SECRET: string = process.env.REFRESH_SECRET as string;
