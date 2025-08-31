@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { createEvent, updateEvent } from '../../../../api/eventService';
 import type { Event } from '../../../../types/event';
 import styles from './CreateEventModal.module.scss';
+import { YMaps, Map, Placemark } from '@pbe/react-yandex-maps';
 
 interface CreateEventModalProps {
   isOpen: boolean;
@@ -21,8 +22,8 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({
   const [formData, setFormData] = useState({
     title: event?.title || '',
     description: event?.description || '',
-    date: event ? new Date(event.date).toISOString().slice(0,16) : '',
-    location: event?.location || ''
+    date: event ? new Date(event.date).toISOString().slice(0, 16) : '',
+    location: event?.location || '' 
   });
 
   const isEditMode = Boolean(event);
@@ -37,14 +38,14 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({
 
     try {
       if (isEditMode && onUpdate) {
-          const updatedEvent = await updateEvent(event!.id, {
-            ...event!,
-            ...formData,
-            date: new Date(formData.date).toISOString(),
-            updatedAt: new Date().toISOString()
-          });
-          onUpdate(updatedEvent);
-        } else if (onCreate) {
+        const updatedEvent = await updateEvent(event!.id, {
+          ...event!,
+          ...formData,
+          date: new Date(formData.date).toISOString(),
+          updatedAt: new Date().toISOString()
+        });
+        onUpdate(updatedEvent);
+      } else if (onCreate) {
         const newEvent = await createEvent({
           ...formData,
           date: new Date(formData.date).toISOString()
@@ -66,16 +67,24 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleMapClick = (e: any) => {
+    const coords = e.get('coords');
+    const coordString = coords.join(', ');
+    setFormData(prev => ({ ...prev, location: coordString }));
+  };
+
   if (!isOpen) return null;
+
+  const placemarkCoords = formData.location
+    ? formData.location.split(',').map(Number)
+    : null;
 
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
       <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
         <div className={styles.modalHeader}>
           <h2>{isEditMode ? 'Редактировать мероприятие' : 'Создать мероприятие'}</h2>
-          <button onClick={onClose} className={styles.closeButton}>
-            ×
-          </button>
+          <button onClick={onClose} className={styles.closeButton}>×</button>
         </div>
 
         <form onSubmit={handleSubmit} className={styles.form}>
@@ -90,7 +99,6 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({
               value={formData.title}
               onChange={handleChange}
               required
-              placeholder="Введите название мероприятия"
             />
           </div>
 
@@ -102,7 +110,6 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({
               value={formData.description}
               onChange={handleChange}
               rows={4}
-              placeholder="Опишите ваше мероприятие"
             />
           </div>
 
@@ -119,32 +126,32 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({
           </div>
 
           <div className={styles.formGroup}>
-            <label htmlFor="location">Место проведения *</label>
-            <input
-              type="text"
-              id="location"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              required
-              placeholder="Где будет проходить мероприятие?"
-            />
+            <label>Место проведения *</label>
+            <YMaps>
+              <Map
+                defaultState={{
+                  center: placemarkCoords || [55.751244, 37.618423],
+                  zoom: 10,
+                }}
+                width="100%"
+                height="300px"
+                onClick={handleMapClick}
+              >
+                {placemarkCoords && (
+                  <Placemark geometry={placemarkCoords} />
+                )}
+              </Map>
+            </YMaps>
+            <small>Координаты: {formData.location || 'не выбрано'}</small>
           </div>
 
           <div className={styles.formActions}>
-            <button
-              type="button"
-              onClick={onClose}
-              className={styles.cancelButton}
-            >
+            <button type="button" onClick={onClose} className={styles.cancelButton}>
               Отмена
             </button>
-            <button 
-              type="submit" 
-              disabled={loading} 
-              className={styles.submitButton}
-            >
-            {loading ? (isEditMode ? 'Сохранение...' : 'Создание...') : (isEditMode ? 'Сохранить' : 'Создать')}
+            <button type="submit" disabled={loading} className={styles.submitButton}>
+              {loading ? (isEditMode ? 'Сохранение...' : 'Создание...') 
+                       : (isEditMode ? 'Сохранить' : 'Создать')}
             </button>
           </div>
         </form>

@@ -8,6 +8,7 @@ import { getCurrentUser } from '../../api/profileService';
 import type { User } from "../../types/user.ts";
 import { AiOutlineHome } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
+import { YMaps, Map, Placemark } from '@pbe/react-yandex-maps';
 
 const Events: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
@@ -88,16 +89,45 @@ const Events: React.FC = () => {
         </div>
       )}
 
-      <div className={styles.actions}>
+      <div className={styles.mapContainer}>
+      <YMaps>
+        <Map
+          defaultState={{
+            center: [55.751244, 37.618423],
+            zoom: 10,
+          }}
+          width="100%"
+          height="400px"
+        >
+          {events
+            .filter(ev => ev.location)
+            .map(ev => {
+              const coords = ev.location.split(',').map(Number); 
+              return (
+                <Placemark
+                  key={ev.id}
+                  geometry={coords}
+                  properties={{
+                    balloonContent: `<strong>${ev.title}</strong><br/>${ev.description || ''}`,
+                    hintContent: ev.title,
+                  }}
+                />
+              );
+            })}
+        </Map>
+      </YMaps>
+    </div>
+
+    <div className={styles.actions}>
         <button
           onClick={() => { setEditingEvent(null); setIsCreateModalOpen(true); }}
           className={styles.createButton}
         >
-          Создать мероприятие
+          ✚ мероприятие
         </button>
-      </div>
+    </div>
 
-      <div className={styles.eventsGrid}>
+    <div className={styles.eventsGrid}>
         {events.length === 0 ? (
           <div className={styles.emptyState}>
             <p>Мероприятий пока нет</p>

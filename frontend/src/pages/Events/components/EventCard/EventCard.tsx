@@ -16,7 +16,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, onDelete, onEdit, canEdit 
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
@@ -36,7 +36,9 @@ const EventCard: React.FC<EventCardProps> = ({ event, onDelete, onEdit, canEdit 
   return (
     <div className={styles.eventCard} onClick={handleEdit}>
       <div className={styles.cardHeader}>
-        <h3 className={styles.title}>{event.title}</h3>
+        <div className={styles.titleContainer}>
+          <h3 className={styles.title}>{event.title}</h3>
+        </div>
         {canEdit && (
           <div className={styles.actions}>
             <button
@@ -44,14 +46,17 @@ const EventCard: React.FC<EventCardProps> = ({ event, onDelete, onEdit, canEdit 
               className={styles.deleteButton}
               title="Удалить мероприятие"
             >
-              X
+              ×
             </button>
           </div>
         )}
       </div>
 
       {event.description && (
-        <p className={styles.description}>{event.description}</p>
+        <div className={styles.detailItem}>
+          <span className={styles.label}>Описание:</span>
+          <p className={styles.value}>{event.description}</p>
+        </div>
       )}
 
       <div className={styles.details}>
