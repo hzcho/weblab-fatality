@@ -1,0 +1,18 @@
+import baseApi from "./baseInstance";
+import { setUser, getUser, removeUser, removeToken } from "../utils/localStorage";
+
+export const getCurrentUser = async() =>{
+    const user=getUser();
+
+    if(!user){
+        const response=await baseApi.get("api/profile/getCurrentUser");
+        setUser(response.data);
+    }
+
+    return getUser();;
+}
+
+export const logout = async() =>{
+    removeUser();
+    removeToken();
+}

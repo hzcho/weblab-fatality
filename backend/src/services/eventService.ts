@@ -3,8 +3,16 @@ import Event from '@models/event';
 import { NotFoundError } from '@utils/errors';
 import { InferCreationAttributes } from 'sequelize';
 
+export type CreateEventDTO = {
+  title: string;
+  description?: string;
+  date: Date;   
+  location: string;
+  createdBy: string;
+};
+
 class EventService {
-  async createEvent(eventData: InferCreationAttributes<Event>): Promise<Event> {
+  async createEvent(eventData: CreateEventDTO): Promise<Event> {
     const { createdBy } = eventData;
 
     const user = await User.findByPk(createdBy);

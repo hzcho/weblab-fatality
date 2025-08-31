@@ -1,0 +1,164 @@
+import React, { useState, useEffect } from 'react';
+import { listEvents, deleteEvent } from '../../api/eventService';
+import EventCard from './components/EventCard/EventCard.tsx';
+import CreateEventModal from './components/CreateEventModal/CreateEventModal.tsx';
+import type { Event } from '../../types/event.ts';
+import styles from './Events.module.scss';
+import { getCurrentUser } from '../../api/profileService';
+import type { User } from "../../types/user.ts";
+import { AiOutlineHome } from 'react-icons/ai';
+import { useNavigate } from 'react-router-dom';
+import { YMaps, Map, Placemark } from '@pbe/react-yandex-maps';
+
+const Events: React.FC = () => {
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const u = await getCurrentUser();
+      setUser(u);
+    };
+
+    fetchUser();
+    fetchEvents();
+  }, []);
+
+  const fetchEvents = async () => {
+    try {
+      setLoading(true);
+      const eventsData = await listEvents();
+      setEvents(eventsData);
+      setError(null);
+    } catch (err) {
+      setError('Ошибка при загрузке мероприятий');
+      console.error('Error fetching events:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteEvent = async (id: string) => {
+    try {
+      await deleteEvent(id);
+      setEvents(events.filter(event => event.id !== id));
+    } catch (err) {
+      setError('Ошибка при удалении мероприятия');
+      console.error('Error deleting event:', err);
+    }
+  };
+
+  const handleCreateEvent = (newEvent: Event) => {
+    setEvents([...events, newEvent]);
+  };
+
+  const handleUpdateEvent = (updatedEvent: Event) => {
+    setEvents(events.map(ev => ev.id === updatedEvent.id ? updatedEvent : ev));
+  };
+
+  if (loading) {
+    return <div className={styles.loading}>Загрузка...</div>;
+  }
+
+  return (
+    <div className={styles.eventsContainer}>
+      <header className={styles.header}>
+        <button className={styles.homeButton} onClick={() => navigate('/')}>
+          <AiOutlineHome size={28} />
+        </button>
+        <h1>Мероприятия</h1>
+        {user && (
+          <div className={styles.userInfo}>
+            <span>Добро пожаловать, {user.name}</span>
+          </div>
+        )}
+      </header>
+
+      {error && (
+        <div className={styles.error}>
+          {error}
+          <button onClick={fetchEvents} className={styles.retryButton}>
+            Повторить
+          </button>
+        </div>
+      )}
+
+      <div className={styles.mapContainer}>
+      <YMaps>
+        <Map
+          defaultState={{
+            center: [55.751244, 37.618423],
+            zoom: 10,
+          }}
+          width="100%"
+          height="400px"
+        >
+          {events
+            .filter(ev => ev.location)
+            .map(ev => {
+              const coords = ev.location.split(',').map(Number); 
+              return (
+                <Placemark
+                  key={ev.id}
+                  geometry={coords}
+                  properties={{
+                    balloonContent: `<strong>${ev.title}</strong><br/>${ev.description || ''}`,
+                    hintContent: ev.title,
+                  }}
+                />
+              );
+            })}
+        </Map>
+      </YMaps>
+    </div>
+
+    <div className={styles.actions}>
+        <button
+          onClick={() => { setEditingEvent(null); setIsCreateModalOpen(true); }}
+          className={styles.createButton}
+        >
+          ✚ мероприятие
+        </button>
+    </div>
+
+    <div className={styles.eventsGrid}>
+        {events.length === 0 ? (
+          <div className={styles.emptyState}>
+            <p>Мероприятий пока нет</p>
+          </div>
+        ) : (
+          events.map(event => (
+            <EventCard
+              key={event.id}
+              event={event}
+              onDelete={handleDeleteEvent}
+              onEdit={(event) => {
+                setEditingEvent(event);
+                setIsCreateModalOpen(true);
+              }}
+              canEdit={true}
+            />
+          ))
+        )}
+      </div>
+
+      {isCreateModalOpen && (
+        <CreateEventModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          onCreate={handleCreateEvent}
+          onUpdate={handleUpdateEvent}
+          event={editingEvent ?? undefined}
+        />
+      )}
+    </div>
+  );
+};
+
+export default Events;
