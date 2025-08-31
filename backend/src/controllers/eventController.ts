@@ -3,6 +3,7 @@ import eventService from '@services/eventService';
 import asyncHandler from '@middleware/asyncHandler';
 import { BadRequestError } from '@utils/errors';
 import { validate as isUUID } from 'uuid';
+import User from '@models/user';
 
 class EventController {
   getAllEvents = asyncHandler(async (req: Request, res: Response) => {
@@ -20,17 +21,20 @@ class EventController {
   });
 
   createEvent = asyncHandler(async (req: Request, res: Response) => {
-    const { title, date, location, createdBy } = req.body;
+    const { title, description, date, location } = req.body;
 
-    if (!title || !date || !createdBy || !location) {
+    if (!title || !date || !location) {
       throw new BadRequestError('Все обязательные поля должны быть заполнены');
     }
+
+    const currentUser = req.user as User;
+    const createdBy=currentUser.id
 
     if (!isUUID(createdBy)) {
       throw new BadRequestError('Некорректный UUID пользователя');
     }
 
-    const event = await eventService.createEvent(req.body);
+    const event = await eventService.createEvent({title, description, date, location, createdBy});
     res.status(201).json(event);
   });
 

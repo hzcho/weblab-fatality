@@ -14,7 +14,7 @@ dotenv.config();
 
 const app = express();
 
-const swaggerDocument: JsonObject = load(readFileSync('./backend/deployment/swagger.yaml', 'utf8')) as JsonObject;
+const swaggerDocument: JsonObject = load(readFileSync('./deployment/swagger.yaml', 'utf8')) as JsonObject;
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use(express.json());
