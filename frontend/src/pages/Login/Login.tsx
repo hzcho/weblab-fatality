@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { login } from '../../api/authService';
 import styles from './Login.module.scss';
 import Input from './components/Input/Input';
 import Button from './components/Button/Button';
 import Notification from './components/Notification/Notification';
+import { getUser } from '../../utils/localStorage';
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -16,6 +17,13 @@ const Login: React.FC = () => {
   const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   
   const navigate = useNavigate();
+
+   useEffect(() => {
+    const user = getUser();
+    if (user) {
+      navigate('/events', { replace: true });
+    }
+  }, [navigate]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

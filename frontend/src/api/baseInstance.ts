@@ -9,10 +9,8 @@ baseApi.interceptors.request.use((config) => {
   const token = getToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
-  }else{
-    console.error("token PUUUUUUUUUUUUUUUUUUUUUUUUUUUSSSSSSSSSSSTTTTTT");
   }
-  console.error(`AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA ${String(token)}`);
+  
   return config;
 });
 

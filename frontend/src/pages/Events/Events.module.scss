@@ -1,10 +1,8 @@
-// Colors
 $primary-green: #4CAF50;
 $primary-dark: #2C3E50;
 $white: #FFFFFF;
-$light-gray: #24292e; //#ECF0F1;
+$light-gray: #24292e;
 $error-red: #E74C3C;
-$success-green: #27AE60;
 
 .eventsContainer {
   width: 100%;
@@ -27,6 +25,20 @@ $success-green: #27AE60;
     color: $primary-dark;
     margin: 0;
     font-size: 2rem;
+  }
+}
+
+.homeButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: $primary-dark;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: $primary-green;
   }
 }
 
@@ -124,7 +136,6 @@ $success-green: #27AE60;
   }
 }
 
-// Responsive design
 @media (max-width: 768px) {
   .eventsContainer {
     padding: 10px;

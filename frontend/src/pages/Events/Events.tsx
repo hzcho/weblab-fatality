@@ -5,29 +5,36 @@ import CreateEventModal from './components/CreateEventModal/CreateEventModal.tsx
 import type { Event } from '../../types/event.ts';
 import styles from './Events.module.scss';
 import { getCurrentUser } from '../../api/profileService';
-import type {User} from "../../types/user.ts";
+import type { User } from "../../types/user.ts";
+import { AiOutlineHome } from 'react-icons/ai';
+import { useNavigate } from 'react-router-dom';
 
 const Events: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [ user, setUser ] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
-    getCurrentUser().then(setUser)
+    const fetchUser = async () => {
+      const u = await getCurrentUser();
+      setUser(u);
+    };
+
+    fetchUser();
     fetchEvents();
   }, []);
 
   const fetchEvents = async () => {
     try {
       setLoading(true);
-
-    const eventsData = await listEvents();
-    setEvents(eventsData);
-
-    setError(null);
+      const eventsData = await listEvents();
+      setEvents(eventsData);
+      setError(null);
     } catch (err) {
       setError('Ошибка при загрузке мероприятий');
       console.error('Error fetching events:', err);
@@ -61,6 +68,9 @@ const Events: React.FC = () => {
   return (
     <div className={styles.eventsContainer}>
       <header className={styles.header}>
+        <button className={styles.homeButton} onClick={() => navigate('/')}>
+          <AiOutlineHome size={28} />
+        </button>
         <h1>Мероприятия</h1>
         {user && (
           <div className={styles.userInfo}>
@@ -100,7 +110,7 @@ const Events: React.FC = () => {
               onDelete={handleDeleteEvent}
               onEdit={(event) => {
                 setEditingEvent(event);
-                setIsCreateModalOpen(true); 
+                setIsCreateModalOpen(true);
               }}
               canEdit={true}
             />

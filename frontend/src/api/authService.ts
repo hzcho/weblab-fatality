@@ -1,5 +1,5 @@
 import baseApi from "./baseInstance.ts";
-import {setToken, removeToken} from "../utils/localStorage.ts"
+import {setToken, setUser, removeToken} from "../utils/localStorage.ts"
 
 export const login = async(email:string, password:string) =>{
     const response= await baseApi.post("/api/auth/login", {email, password});

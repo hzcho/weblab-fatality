@@ -1,11 +1,20 @@
 import React from "react";
+import styles from "./NotFound.module.scss";
 
 const NotFound: React.FC = () => {
   return (
-    <div style={{ backgroundColor: "#f0f0f0", minHeight: "100vh", padding: "20px" }}>
-      <h1>404 - Страница не найденаddddddddddddddddddddddddddddddddddddddddddddddddddd</h1>
-      <p>Это тестовая страница для проверки ширины отображения.</p>
-      <p>Если элементы отображаются узкой полоской — значит проблема в глобальных стилях.</p>
+    <div className={styles.container}>
+      <div className={styles.content}>
+        <img 
+          src="/404.jpg"
+          alt="Не найдено" 
+          className={styles.image}
+        />
+        <h1 className={styles.title}>404 - Страница не найдена</h1>
+        <p className={styles.text}>
+          Извините, но страница, которую вы ищете, не существует.
+        </p>
+      </div>
     </div>
   );
 };
