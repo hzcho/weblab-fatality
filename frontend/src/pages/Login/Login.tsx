@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { login } from '../../api/authService';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { loginUser, resetError } from '../../store/slices/authSlice';
 import styles from './Login.module.scss';
 import Input from './components/Input/Input';
 import Button from './components/Button/Button';
 import Notification from './components/Notification/Notification';
-import { getUser } from '../../utils/localStorage';
+import { useSelector, useDispatch } from "react-redux";
+import type { RootState, AppDispatch } from "../../store/store";
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -13,31 +15,38 @@ const Login: React.FC = () => {
     password: '',
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [isLoading, setIsLoading] = useState(false);
   const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
-  
+
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-   useEffect(() => {
-    const user = getUser();
-    if (user) {
-      navigate('/events', { replace: true });
+  const { isAuthenticated, isLoading, isError, errorMessage } = useAppSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (isError && errorMessage) {
+      setNotification({ type: 'error', message: errorMessage });
+      dispatch(resetError());
     }
-  }, [navigate]);
+  }, [isError, errorMessage, dispatch]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      setNotification({ type: 'success', message: 'Успешный вход! Перенаправляем...' });
+
+      const timer = setTimeout(() => {
+        navigate('/events', { replace: true });
+      }, 1700);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    
-    // Clear error when user starts typing
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
     if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
+      setErrors((prev) => ({ ...prev, [name]: '' }));
     }
   };
 
@@ -62,30 +71,11 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!validateForm()) return;
 
-    setIsLoading(true);
     setNotification(null);
-
-    try {
-      await login(formData.email, formData.password);
-      setNotification({
-        type: 'success',
-        message: 'Авторизация успешна! Перенаправление на страницу входа...'
-      });
-      
-      setTimeout(() => {
-        navigate('/events');
-      }, 2000);
-    } catch (error: any) {
-      setNotification({
-        type: 'error',
-        message: error.response?.data?.message || 'Ошибка при авторизации'
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    await dispatch(loginUser(formData));
+    // редирект произойдёт позже в useEffect при isAuthenticated
   };
 
   return (
@@ -93,7 +83,7 @@ const Login: React.FC = () => {
       <div className={styles.loginCard}>
         <div className={styles.header}>
           <h1>Вход в систему</h1>
-          <p>введите почту и пароль</p>
+          <p>Введите почту и пароль</p>
         </div>
 
         {notification && (
@@ -104,9 +94,7 @@ const Login: React.FC = () => {
           />
         )}
 
-        <form onSubmit={
-          handleSubmit
-          } className={styles.form}>
+        <form onSubmit={handleSubmit} className={styles.form}>
           <Input
             label="Email"
             type="email"
@@ -140,7 +128,9 @@ const Login: React.FC = () => {
         </form>
 
         <div className={styles.loginLink}>
-          <p>Еще нет аккаунта? <Link to="/register">Зарегистрируйтесь</Link></p>
+          <p>
+            Еще нет аккаунта? <Link to="/register">Зарегистрируйтесь</Link>
+          </p>
         </div>
       </div>
     </div>

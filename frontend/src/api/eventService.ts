@@ -6,6 +6,11 @@ export const listEvents= async () =>{
     return response.data;
 }
 
+export const listUserEvents = async (id: string) =>{
+    const response=await baseApi.get(`/api/events/user/${id}`);
+    return response.data;
+}
+
 export const createEvent = async (eventData: any) =>{
     const response =await baseApi.post("/api/events", eventData);
     return response.data;

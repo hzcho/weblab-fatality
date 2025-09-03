@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { register } from '../../api/authService';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { registerUser, resetError } from '../../store/slices/authSlice';
 import styles from './Register.module.scss';
 import Input from './components/Input/Input';
 import Button from './components/Button/Button';
@@ -14,10 +15,19 @@ const Register: React.FC = () => {
     confirmPassword: ''
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [isLoading, setIsLoading] = useState(false);
   const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
+  const { isLoading, isError, errorMessage } = useAppSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (isError && errorMessage) {
+      setNotification({ type: 'error', message: errorMessage });
+      dispatch(resetError());
+    }
+  }, [isError, errorMessage, dispatch]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -66,11 +76,15 @@ const Register: React.FC = () => {
     
     if (!validateForm()) return;
 
-    setIsLoading(true);
     setNotification(null);
-
+    
     try {
-      await register(formData.name, formData.email, formData.password);
+      await dispatch(registerUser({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password
+      })).unwrap();
+
       setNotification({
         type: 'success',
         message: 'Регистрация успешна! Перенаправление на страницу входа...'
@@ -80,12 +94,7 @@ const Register: React.FC = () => {
         navigate('/login');
       }, 2000);
     } catch (error: any) {
-      setNotification({
-        type: 'error',
-        message: error.response?.data?.message || 'Ошибка при регистрации'
-      });
-    } finally {
-      setIsLoading(false);
+      console.error('Registration error:', error);
     }
   };
 

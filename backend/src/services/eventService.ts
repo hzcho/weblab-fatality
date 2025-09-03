@@ -27,6 +27,12 @@ class EventService {
     return await Event.findAll();
   }
 
+  async getEventsByUserId(userId: string): Promise<Event[]> {
+    return await Event.findAll({
+      where: { createdBy: userId },
+    });
+  }
+
   async getEventById(id: string): Promise<Event | null> {
     return await Event.findByPk(id);
   }

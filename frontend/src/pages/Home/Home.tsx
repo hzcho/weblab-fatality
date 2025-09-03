@@ -1,32 +1,31 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import type { RootState, AppDispatch } from "../../store/store";
+import { fetchCurrentUser } from "../../store/slices/profileSlice";
+import { logoutUser } from "../../store/slices/authSlice";
 import styles from "./Home.module.scss";
 import { Link, useNavigate } from "react-router-dom";
-import { getCurrentUser, logout } from "../../api/profileService";
-import type { User } from "../../types/user";
+import { getToken } from "../../utils/localStorage";
 
 const Home = () => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch<AppDispatch>();
+  const { user, } = useSelector((state: RootState) => state.auth);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const u = await getCurrentUser();
-        setUser(u);
-      } catch {
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchUser();
-  }, []);
+  const token = getToken();
+  if (token) {
+    dispatch(fetchCurrentUser());
+  }
+  }, [dispatch]);
 
-  const handleLogout = () => {
-    logout();
-    setUser(null);
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      await dispatch(logoutUser()).unwrap();
+      navigate("/");
+    } catch (error) {
+      console.error('Ошибка при выходе:', error);
+    }
   };
 
   return (
@@ -42,33 +41,29 @@ const Home = () => {
             </h1>
           </div>
 
-          {loading ? (
-            <div className={styles.loaderMini}>
-              <div className={styles.spinner}></div>
-            </div>
-          ) : user ? (
-            <div className={styles.userMenu}>
-              <span className={styles.userName}>{user.name}</span>
-              <button className={styles.logoutButton} onClick={handleLogout}>
-                Выйти
-              </button>
-              <button
-                className={styles.primaryButton}
-                onClick={() => navigate("/events")}
-              >
-                Панель
-              </button>
-            </div>
-          ) : (
-            <div className={styles.authButtons}>
-              <Link to="/login">
-                <button className={styles.authButton}>Войти</button>
-              </Link>
-              <Link to="/register">
-                <button className={styles.authButton}>Создать аккаунт</button>
-              </Link>
-            </div>
-          )}
+        {user ? (
+          <div className={styles.userMenu}>
+            <span className={styles.userName}>{user.name}</span>
+            <button className={styles.logoutButton} onClick={handleLogout}>
+              Выйти
+            </button>
+            <button
+              className={styles.primaryButton}
+              onClick={() => navigate("/profile")}
+            >
+              Профиль
+            </button>
+          </div>
+        ) : (
+          <div className={styles.authButtons}>
+            <Link to="/login">
+              <button className={styles.authButton}>Войти</button>
+            </Link>
+            <Link to="/register">
+              <button className={styles.authButton}>Создать аккаунт</button>
+            </Link>
+          </div>
+        )}
         </div>
 
         <p className={styles.subtitle}>

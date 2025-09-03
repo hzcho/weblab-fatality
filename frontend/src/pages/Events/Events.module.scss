@@ -180,3 +180,64 @@ $primary-light: #99bb72;
   border-bottom: 2px solid $white;
   padding-bottom: 430px;
 }
+
+.userInfo {
+  display: flex;
+  align-items: center;
+}
+
+.profileLink {
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  background: rgba(76, 175, 80, 0.1);
+  border: 1px solid rgba(76, 175, 80, 0.2);
+  
+  &:hover {
+    background: rgba(76, 175, 80, 0.2);
+    transform: translateY(-1px);
+  }
+}
+
+.textContainer {
+  position: relative;
+  display: block;
+  min-width: 120px;
+  text-align: center;
+  height: 35px;
+  overflow: hidden;
+}
+
+.normalText, .hoverText {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  transition: all 0.3s ease;
+  color: #4CAF50;
+  font-weight: 500;
+}
+
+.normalText {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hoverText {
+  opacity: 0;
+  transform: translateY(20px);
+  font-weight: 600;
+}
+
+.profileLink:hover {
+  .normalText {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  
+  .hoverText {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

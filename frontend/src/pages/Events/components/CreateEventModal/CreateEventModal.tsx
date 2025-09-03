@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
-import { createEvent, updateEvent } from '../../../../api/eventService';
-import type { Event } from '../../../../types/event';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import type { AppDispatch, RootState } from '../../../../store/store';
+import { addEvent, editEvent } from '../../../../store/slices/eventSlice';
+import type { Event, CreateEventData } from '../../../../types/event';
 import styles from './CreateEventModal.module.scss';
 import { YMaps, Map, Placemark } from '@pbe/react-yandex-maps';
 
 interface CreateEventModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onCreate: (event: Event) => void;
-  onUpdate?: (event: Event) => void;
+  onCreate?: () => void;
+  onUpdate?: () => void;
   event?: Event;
 }
 
@@ -19,46 +21,59 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({
   onUpdate,
   event,
 }) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { isLoading, isError, errorMessage } = useSelector((state: RootState) => state.events);
+  
   const [formData, setFormData] = useState({
-    title: event?.title || '',
-    description: event?.description || '',
-    date: event ? new Date(event.date).toISOString().slice(0, 16) : '',
-    location: event?.location || '' 
+    title: '',
+    description: '',
+    date: '',
+    location: ''
   });
 
   const isEditMode = Boolean(event);
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    if (event) {
+      setFormData({
+        title: event.title || '',
+        description: event.description || '',
+        date: new Date(event.date).toISOString().slice(0, 16),
+        location: event.location || ''
+      });
+    } else {
+      setFormData({
+        title: '',
+        description: '',
+        date: '',
+        location: ''
+      });
+    }
+  }, [event]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
+    
+    const eventData: CreateEventData = {
+      ...formData,
+      date: new Date(formData.date).toISOString()
+    };
 
     try {
-      if (isEditMode && onUpdate) {
-        const updatedEvent = await updateEvent(event!.id, {
-          ...event!,
-          ...formData,
-          date: new Date(formData.date).toISOString(),
-          updatedAt: new Date().toISOString()
-        });
-        onUpdate(updatedEvent);
-      } else if (onCreate) {
-        const newEvent = await createEvent({
-          ...formData,
-          date: new Date(formData.date).toISOString()
-        });
-        onCreate(newEvent);
+      if (isEditMode) {
+        await dispatch(editEvent({
+          id: event!.id,
+          eventData
+        })).unwrap();
+        onUpdate?.();
+      } else {
+        await dispatch(addEvent(eventData)).unwrap();
+        onCreate?.();
         setFormData({ title: '', description: '', date: '', location: '' });
       }
       onClose();
     } catch (err) {
-      setError(isEditMode ? 'Ошибка при обновлении' : 'Ошибка при создании');
       console.error('Error saving event:', err);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -88,7 +103,7 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({
         </div>
 
         <form onSubmit={handleSubmit} className={styles.form}>
-          {error && <div className={styles.error}>{error}</div>}
+          {isError && <div className={styles.error}>{errorMessage || 'Ошибка при сохранении'}</div>}
 
           <div className={styles.formGroup}>
             <label htmlFor="title">Название *</label>
@@ -149,9 +164,14 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({
             <button type="button" onClick={onClose} className={styles.cancelButton}>
               Отмена
             </button>
-            <button type="submit" disabled={loading} className={styles.submitButton}>
-              {loading ? (isEditMode ? 'Сохранение...' : 'Создание...') 
-                       : (isEditMode ? 'Сохранить' : 'Создать')}
+            <button 
+              type="submit" 
+              disabled={isLoading} 
+              className={styles.submitButton}
+            >
+              {isLoading 
+                ? (isEditMode ? 'Сохранение...' : 'Создание...') 
+                : (isEditMode ? 'Сохранить' : 'Создать')}
             </button>
           </div>
         </form>

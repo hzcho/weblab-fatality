@@ -11,6 +11,12 @@ class EventController {
     res.status(200).json(events);
   });
 
+  getUserEvents = asyncHandler(async (req: Request, res: Response) =>{
+    const {id} = req.params
+    const events = await eventService.getEventsByUserId(id);
+    res.status(200).json(events);
+  })
+
   getEventById = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
     if (!isUUID(id)) {
