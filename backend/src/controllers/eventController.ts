@@ -65,6 +65,21 @@ class EventController {
     const response = await eventService.deleteEvent(id);
     res.status(200).json(response);
   });
+
+  participateInEvent = asyncHandler(async (req: Request, res: Response) => {
+    const { id: eventId } = req.params;
+    const currentUser = req.user as User;
+
+    const participation = await eventService.participateInEvent(currentUser.id, eventId);
+    res.status(201).json(participation);
+  });
+
+  getEventParticipants = asyncHandler(async (req: Request, res: Response) => {
+    const { id: eventId } = req.params;
+    const participants = await eventService.getEventParticipants(eventId);
+    res.status(200).json(participants);
+  });
+
 }
 
 export default new EventController();

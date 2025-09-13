@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { Event, CreateEventData } from '../../types/event';
-import { listEvents, createEvent, updateEvent, deleteEvent, listUserEvents } from '../../api/eventService';
+import { listEvents, createEvent, updateEvent, deleteEvent, listUserEvents, joinEvent, getEventParticipants } from '../../api/eventService';
+import type { EventParticipant } from '../../types/eventParticipant';
 
 interface EventState {
   events: Event[];
@@ -75,6 +76,32 @@ export const removeEvent = createAsyncThunk(
     }
   }
 );
+
+
+export const participateInEvent = createAsyncThunk(
+  'events/joinEvent',
+  async (eventId: string, { rejectWithValue }) => {
+    try {
+      const response = await joinEvent(eventId);
+      return { eventId, participant: response };
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Ошибка участия');
+    }
+  }
+);
+
+export const fetchParticipants = createAsyncThunk(
+  'events/fetchParticipants',
+  async (eventId: string, { rejectWithValue }) => {
+    try {
+      const response = await getEventParticipants(eventId);
+      return { eventId, participants: response };
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Ошибка загрузки участников');
+    }
+  }
+);
+
 
 const eventSlice = createSlice({
   name: 'events',
@@ -159,7 +186,22 @@ const eventSlice = createSlice({
         state.isLoading = false;
         state.isError = true;
         state.errorMessage = action.payload as string;
-      });
+      })
+      .addCase(participateInEvent.fulfilled, (state, action) => {
+      const { eventId, participant } = action.payload;
+      const event = state.events.find(ev => ev.id === eventId);
+      if (event) {
+        if (!event.participants) event.participants = [];
+        event.participants.push(participant);
+      }
+    })
+    .addCase(fetchParticipants.fulfilled, (state, action) => {
+      const { eventId, participants } = action.payload;
+      const event = state.events.find(ev => ev.id === eventId);
+      if (event) {
+        event.participants = participants;
+      }
+    });
   },
 });
 

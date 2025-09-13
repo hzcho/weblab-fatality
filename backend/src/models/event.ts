@@ -5,6 +5,7 @@ import {
   InferCreationAttributes,
   CreationOptional,
   ForeignKey,
+  NonAttribute,
 } from 'sequelize';
 import { sequelize } from '@config/db';
 import User from '@models/user';
@@ -21,6 +22,7 @@ class Event extends Model<
   declare createdBy: ForeignKey<User['id']>;
   declare readonly createdAt: CreationOptional<Date>;
   declare readonly updatedAt: CreationOptional<Date>;
+  declare participants?: NonAttribute<User[]>;
 }
 
 Event.init(

@@ -1,7 +1,8 @@
 import User from '@models/user';
 import Event from '@models/event';
-import { NotFoundError } from '@utils/errors';
+import { NotFoundError, BadRequestError } from '@utils/errors';
 import { InferCreationAttributes } from 'sequelize';
+import EventParticipant from '@models/eventParticipant';
 
 export type CreateEventDTO = {
   title: string;
@@ -65,6 +66,46 @@ class EventService {
     await event.destroy();
 
     return { message: 'Мероприятие удалено' };
+  }
+
+  async participateInEvent(userId: string, eventId: string) {
+    const event = await Event.findByPk(eventId);
+    if (!event) {
+      throw new NotFoundError('Мероприятие не найдено');
+    }
+
+    if (event.createdBy === userId) {
+      throw new BadRequestError('Нельзя участвовать в своём мероприятии');
+    }
+
+    const already = await EventParticipant.findOne({ where: { userId, eventId } });
+    if (already) {
+      throw new BadRequestError('Вы уже участвуете в этом мероприятии');
+    }
+
+    await EventParticipant.create({ userId, eventId });
+
+    const user = await User.findByPk(userId, {
+      attributes: ['id', 'name', 'email'],
+    });
+
+    return user;
+  }
+
+  async getEventParticipants(eventId: string) {
+    const event = await Event.findByPk(eventId, {
+      include: [{
+        model: User,
+        as: 'participants',
+        attributes: ['id', 'name', 'email']
+      }],
+    });
+
+    if (!event) {
+      throw new NotFoundError('Мероприятие не найдено');
+    }
+
+    return event.participants;
   }
 }
 

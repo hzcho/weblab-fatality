@@ -10,4 +10,7 @@ router.post('/', EventController.createEvent);
 router.put('/:id', EventController.updateEvent);
 router.delete('/:id', EventController.deleteEvent);
 
+router.post('/:id/participate', EventController.participateInEvent);
+router.get('/:id/participants', EventController.getEventParticipants);
+
 export default router;

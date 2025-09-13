@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState, AppDispatch } from '../../store/store';
-import { fetchEvents, removeEvent } from '../../store/slices/eventSlice';
+import { 
+  fetchEvents, 
+  removeEvent, 
+  participateInEvent, 
+  fetchParticipants 
+} from '../../store/slices/eventSlice';
 import EventCard from './components/EventCard/EventCard.tsx';
 import CreateEventModal from './components/CreateEventModal/CreateEventModal.tsx';
 import type { Event } from '../../types/event.ts';
@@ -13,7 +18,7 @@ import { YMaps, Map, Placemark } from '@pbe/react-yandex-maps';
 const Events: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { events, isLoading: eventsLoading, isError: eventsError, errorMessage } = useSelector((state: RootState) => state.events);
-  const { user, isLoading: profileLoading } = useSelector((state: RootState) => state.profile);
+  const { user, isLoading: profileLoading } = useSelector((state: RootState) => state.auth);
   
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
@@ -29,6 +34,24 @@ const Events: React.FC = () => {
       await dispatch(removeEvent(id)).unwrap();
     } catch (err) {
       console.error('Error deleting event:', err);
+    }
+  };
+
+  const handleParticipate = async (eventId: string) => {
+    try {
+      await dispatch(participateInEvent(eventId)).unwrap();
+    } catch (err) {
+      console.error('Error participating in event:', err);
+      alert('Ошибка при участии в мероприятии');
+    }
+  };
+
+  const handleFetchParticipants = async (eventId: string) => {
+    try {
+      await dispatch(fetchParticipants(eventId)).unwrap();
+    } catch (err) {
+      console.error('Error fetching participants:', err);
+      throw err;
     }
   };
 
@@ -60,24 +83,24 @@ const Events: React.FC = () => {
   return (
     <div className={styles.eventsContainer}>
       <header className={styles.header}>
-  <button className={styles.homeButton} onClick={() => navigate('/')}>
-    <AiOutlineHome size={28} />
-  </button>
-  <h1>Мероприятия</h1>
-  {user && (
-    <div className={styles.userInfo}>
-      <div 
-        className={styles.profileLink}
-        onClick={() => navigate('/profile')}
-      >
-        <span className={styles.textContainer}>
-          <span className={styles.normalText}>{user.name}</span>
-          <span className={styles.hoverText}>Профиль</span>
-        </span>
-      </div>
-    </div>
-  )}
-</header>
+        <button className={styles.homeButton} onClick={() => navigate('/')}>
+          <AiOutlineHome size={28} />
+        </button>
+        <h1>Мероприятия</h1>
+        {user && (
+          <div className={styles.userInfo}>
+            <div 
+              className={styles.profileLink}
+              onClick={() => navigate('/profile')}
+            >
+              <span className={styles.textContainer}>
+                <span className={styles.normalText}>{user.name}</span>
+                <span className={styles.hoverText}>Профиль</span>
+              </span>
+            </div>
+          </div>
+        )}
+      </header>
 
       {eventsError && (
         <div className={styles.error}>
@@ -138,7 +161,10 @@ const Events: React.FC = () => {
               event={event}
               onDelete={handleDeleteEvent}
               onEdit={handleEditEvent}
-              canEdit={true}
+              onParticipate={handleParticipate}
+              onFetchParticipants={handleFetchParticipants}
+              canEdit={event.createdBy === user?.id}
+              currentUserId={user?.id || ''}
             />
           ))
         )}

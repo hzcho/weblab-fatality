@@ -12,7 +12,6 @@ $nav-bg: #1a1a1a;
   min-height: 100vh;
 }
 
-/* Навигационная панель */
 .navigationBar {
   display: flex;
   justify-content: center;
@@ -50,7 +49,6 @@ $nav-bg: #1a1a1a;
   }
 }
 
-/* Заголовок профиля */
 .header {
   display: flex;
   justify-content: space-between;
@@ -141,7 +139,6 @@ $nav-bg: #1a1a1a;
   }
 }
 
-/* Секция мероприятий */
 .eventsSection {
   margin-top: 40px;
 }
@@ -179,7 +176,6 @@ $nav-bg: #1a1a1a;
   gap: 25px;
 }
 
-/* Состояния загрузки и ошибок */
 .loading {
   text-align: center;
   padding: 60px;
@@ -274,7 +270,6 @@ $nav-bg: #1a1a1a;
   }
 }
 
-/* Анимации */
 @keyframes fadeIn {
   from {
     opacity: 0;

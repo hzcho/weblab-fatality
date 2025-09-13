@@ -1,3 +1,4 @@
+import type {User} from "./user"
 export interface Event {
   id: string;
   title: string;
@@ -7,6 +8,7 @@ export interface Event {
   createdBy: string;
   createdAt: string;
   updatedAt: string;
+  participants?: User[];
 }
 
 export interface CreateEventData {

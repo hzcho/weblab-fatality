@@ -13,7 +13,7 @@ import { AiOutlineHome, AiOutlineCalendar, AiOutlineLogout, AiOutlinePlus } from
 const Profile: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const { user, isLoading: profileLoading } = useSelector((state: RootState) => state.profile);
+  const { user, isLoading: profileLoading } = useSelector((state: RootState) => state.auth);
   const { events, isLoading: eventsLoading } = useSelector((state: RootState) => state.events);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | undefined>();
@@ -68,7 +68,6 @@ const Profile: React.FC = () => {
 
   return (
     <div className={styles.profile}>
-      {/* Навигационная панель */}
       <div className={styles.navigationBar}>
         <button 
           onClick={navigateToHome}
@@ -122,7 +121,6 @@ const Profile: React.FC = () => {
         </div>
       </div>
 
-      {/* Секция мероприятий */}
       <div className={styles.eventsSection}>
         <div className={styles.sectionHeader}>
           <h2>Мои мероприятия</h2>
@@ -153,6 +151,9 @@ const Profile: React.FC = () => {
                 onDelete={handleDeleteEvent}
                 onEdit={handleEditEvent}
                 canEdit={true}
+                onParticipate={() => {}}
+                onFetchParticipants={() => {}}
+                currentUserId={user?.id || ''}
               />
             ))}
           </div>

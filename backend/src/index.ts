@@ -9,6 +9,7 @@ import { readFileSync } from 'fs';
 import swaggerUi, { JsonObject } from 'swagger-ui-express';
 import morganLogger from '@middleware/morganLogger.js';
 import passport from '@config/passport.js';
+import '@models/index.js';
 
 dotenv.config();
 
