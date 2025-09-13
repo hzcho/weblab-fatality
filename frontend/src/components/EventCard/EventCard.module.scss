@@ -1,4 +1,4 @@
-@import '../../Events.module.scss';
+@import '../../pages/Events/Events.module.scss';
 
 .eventCard {
   background-color: $primary-gray;
@@ -7,6 +7,7 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   position: relative;
+  cursor: pointer;
 
   &:hover {
     transform: translateY(-2px);
@@ -42,8 +43,8 @@
 
 .actions {
   flex-shrink: 0;
-  margin-top: -5px; // Небольшая корректировка выравнивания
-  margin-right: -5px; // Небольшая корректировка выравнивания
+  margin-top: -5px;
+  margin-right: -5px;
 }
 
 .deleteButton {
@@ -105,14 +106,95 @@
 .footer {
   border-top: 1px solid $light-gray;
   padding-top: 15px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  
 }
+
+.participantsSection {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  flex: 1;
+}
+
+.participantsButton,
+.participateButton {
+  max-width: 140px;
+  padding: 6px 12px;
+  font-size: 0.80rem;
+  text-align: center;
+}
+
 
 .createdAt {
-  color: lighten($primary-dark, 30%);
+  flex-shrink: 0;
   font-size: 0.85rem;
+  color: lighten($primary-dark, 30%);
 }
 
-// Responsive design
+
+.participantsButton {
+  background: none;
+  border: 1px solid $primary-green;
+  color: $primary-green;
+  padding: 6px 12px;
+  border-radius: 15px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: $primary-green;
+    color: $white;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.loadingDot {
+  animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.3; }
+}
+
+.participateButton {
+  background-color: $primary-green;
+  color: $white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 60px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  align-self: flex-start;
+
+  &:hover:not(:disabled) {
+    background-color: darken($primary-green, 10%);
+  }
+
+  &:disabled {
+    background-color: lighten($primary-green, 20%);
+    cursor: not-allowed;
+  }
+
+  &.participating {
+    background-color: lighten($primary-green, 10%);
+    cursor: default;
+  }
+}
+
 @media (max-width: 480px) {
   .eventCard {
     padding: 15px;
@@ -127,4 +209,21 @@
     height: 25px;
     font-size: 1rem;
   }
+
+  .footer {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .participantsButton,
+  .participateButton {
+    font-size: 0.8rem;
+    padding: 5px 10px;
+  }
+}
+
+.invisibleButton {
+  width: 30px;
+  height: 30px;
+  visibility: hidden; 
 }

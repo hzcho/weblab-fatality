@@ -1,4 +1,4 @@
-@import './styles/variables';
+@import '../../styles/variables';
 
 .registerContainer {
   width: 100%;
@@ -74,7 +74,6 @@
   }
 }
 
-// Responsive design
 @media (max-width: 768px) {
   .registerContainer {
     padding: 15px;
