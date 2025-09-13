@@ -3,9 +3,9 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { registerUser, resetError } from '../../store/slices/authSlice';
 import styles from './Register.module.scss';
-import Input from './components/Input/Input';
-import Button from './components/Button/Button';
-import Notification from './components/Notification/Notification';
+import Input from '../../components/Input/Input';
+import Button from '../../components/Button/Button';
+import Notification from '../../components/Notification/Notification';
 
 const Register: React.FC = () => {
   const [formData, setFormData] = useState({

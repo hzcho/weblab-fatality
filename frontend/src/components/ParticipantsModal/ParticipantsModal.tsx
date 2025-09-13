@@ -1,5 +1,5 @@
 import React from 'react';
-import type { User } from '../../../../types/user';
+import type { User } from '../../types/user';
 import styles from './ParticipantsModal.module.scss';
 
 interface ParticipantsModalProps {

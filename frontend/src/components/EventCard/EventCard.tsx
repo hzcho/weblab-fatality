@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import type { Event } from '../../../../types/event';
-import type { EventParticipant } from '../../../../types/eventParticipant';
+import type { Event } from '../../types/event';
 import styles from './EventCard.module.scss';
 import ParticipantsModal from '../ParticipantsModal/ParticipantsModal';
 import { useEffect } from 'react';

@@ -7,8 +7,8 @@ import {
   participateInEvent, 
   fetchParticipants 
 } from '../../store/slices/eventSlice';
-import EventCard from './components/EventCard/EventCard.tsx';
-import CreateEventModal from './components/CreateEventModal/CreateEventModal.tsx';
+import EventCard from '../../components/EventCard/EventCard.tsx';
+import CreateEventModal from '../../components/CreateEventModal/CreateEventModal.tsx';
 import type { Event } from '../../types/event.ts';
 import styles from './Events.module.scss';
 import { AiOutlineHome } from 'react-icons/ai';

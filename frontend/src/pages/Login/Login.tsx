@@ -3,9 +3,9 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { loginUser, resetError } from '../../store/slices/authSlice';
 import styles from './Login.module.scss';
-import Input from './components/Input/Input';
-import Button from './components/Button/Button';
-import Notification from './components/Notification/Notification';
+import Input from '../../components/Input/Input';
+import Button from '../../components/Button/Button';
+import Notification from '../../components/Notification/Notification';
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState, AppDispatch } from "../../store/store";
 
